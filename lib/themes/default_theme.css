@@ -1,0 +1,20 @@
+/* Default views theme */
+
+.viewBackground{
+    background: #f0f0f0;
+}
+
+.navPanel{
+    background: #5897ce;
+    color:  #f0f0f0;
+}
+
+.controlPanel {
+    background: #88c7fe;
+}
+
+.selectable:hover{
+    background-color: #5897ce;
+        color: white;
+        cursor: pointer;
+    }
