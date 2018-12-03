@@ -1,5 +1,3 @@
-part of 'views.dart';
-
 class ViewsTheme {
   static const String viewBackground = 'viewBackground';
   static const String navPanel = 'navPanel';

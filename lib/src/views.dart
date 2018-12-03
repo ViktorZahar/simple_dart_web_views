@@ -1,9 +1,0 @@
-import 'dart:async';
-import 'dart:html';
-import 'package:simple_dart_web_widgets/src/widgets.dart';
-part 'NavPanel.dart';
-part 'View.dart';
-part 'NavPanelButton.dart';
-part 'MainWindow.dart';
-part 'StandartView.dart';
-part 'ViewsTheme.dart';

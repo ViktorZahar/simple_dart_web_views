@@ -1,8 +1,7 @@
-part of 'views.dart';
+import 'dart:async';
+import 'dart:html';
 
-/**
- * View component
- */
+/// View component
 
 abstract class View {
   Element get nodeRoot;
@@ -11,15 +10,13 @@ abstract class View {
 
   String getCaption();
 
+  bool captionIsImage() => false;
+
   View getParentView();
 
-  Map<String, String> getChindrenCaptions() {
-    return {};
-  }
+  Map<String, String> getChindrenCaptions() => {};
 
-  Future<View> getChildViewById(String id) async {
-    return null;
-  }
+  Future<View> getChildViewById(String id) async => null;
 
   void afterShow() {}
 

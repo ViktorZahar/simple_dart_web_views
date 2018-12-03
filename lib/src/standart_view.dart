@@ -1,36 +1,35 @@
-part of 'views.dart';
+import 'package:simple_dart_web_views/views.dart';
+import 'package:simple_dart_web_widgets/widgets.dart';
 
 abstract class StandartView extends HVPanel with View {
-  final View parent;
-  HVPanel controlPanel;
-  HVPanel viewContent;
-
   StandartView(this.parent) {
     vertical();
     fillContent();
-    controlPanel = new HVPanel()
+    controlPanel
       ..addCssClasses([ViewsTheme.controlPanel])
       ..setPadding(5)
       ..height = '30px'
       ..setSpaceBetweenItems(5)
-      ..varName("controlPanel")
+      ..varName('controlPanel')
       ..addCssClasses([ViewsTheme.viewBackground]);
     fillControlPanel(controlPanel);
-    viewContent = new HVPanel()
+    viewContent
       ..vertical()
       ..fillContent()
-      ..varName("viewContent")
+      ..varName('viewContent')
       ..scrollable();
     fillViewContent(viewContent);
     dartClassName('StandartView');
     addAll([controlPanel, viewContent]);
   }
+  final View parent;
+  final HVPanel controlPanel = HVPanel();
+  final HVPanel viewContent = HVPanel();
+
 
   @override
-  View getParentView() {
-    return parent;
-  }
+  View getParentView() => parent;
 
-  fillControlPanel(HVPanel controlPanel) {}
-  fillViewContent(HVPanel viewContent) {}
+  void fillControlPanel(HVPanel controlPanel) {}
+  void fillViewContent(HVPanel viewContent) {}
 }

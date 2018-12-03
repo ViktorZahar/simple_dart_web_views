@@ -4,5 +4,4 @@ packages/*
 build/*
 web/packages/*
 .packages
-analysis_options.yaml
 pubspec.lock
