@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:simple_dart_web_views/views.dart';
 import 'package:simple_dart_web_widgets/widgets.dart';
 
@@ -31,7 +33,7 @@ class DialogExampleView extends StandartView {
   @override
   void fillViewContent(HVPanel viewContent) {}
 
-  void openCustomDiapog(event) {
+  void openCustomDiapog(Event event) {
     customDialogWindow.showDialog();
   }
 }
