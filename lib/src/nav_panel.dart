@@ -1,7 +1,7 @@
 import 'dart:html';
 
-import 'package:simple_dart_web_views/src/nav_panel_button.dart';
-import 'package:simple_dart_web_views/src/views_theme.dart';
+import 'nav_panel_button.dart';
+import 'views_theme.dart';
 
 class NavPanel {
   NavPanel() {

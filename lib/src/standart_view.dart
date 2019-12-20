@@ -1,6 +1,8 @@
-import 'package:simple_dart_web_views/views.dart';
 import 'package:simple_dart_web_widgets/widgets.dart';
+import '../views.dart';
 
+
+// StandartView - стандартный view c контрольной панелью
 abstract class StandartView extends HVPanel with View {
   StandartView(this.parent) {
     vertical();

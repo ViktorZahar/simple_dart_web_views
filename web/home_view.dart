@@ -6,7 +6,7 @@ import 'package:simple_dart_web_widgets/widgets.dart';
 
 import 'dialog_example_view.dart';
 
-class HomeView extends View {
+class HomeView with View {
   HomeView() {
     final viewContnet = HVPanel()..vertical();
 

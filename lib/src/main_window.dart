@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:simple_dart_web_views/views.dart';
+import '../views.dart';
 
 MainWindow mainWindow = MainWindow();
 
@@ -80,7 +80,7 @@ class MainWindow {
   Future<View> getViewByPath(String path) async {
     final viewIds = path.split('/');
     var pathView = homeView;
-    for (var viewId in viewIds) {
+    for (final viewId in viewIds) {
       if (pathView != null && viewId.isNotEmpty) {
         pathView = await pathView.getChildViewById(viewId);
       }
