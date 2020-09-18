@@ -10,7 +10,7 @@ abstract class StandartView extends HVPanel with View {
     controlPanel
       ..addCssClasses([ViewsTheme.controlPanel])
       ..setPadding(5)
-      ..height = '30px'
+      ..height = '35px'
       ..setSpaceBetweenItems(5)
       ..varName('controlPanel')
       ..addCssClasses([ViewsTheme.viewBackground]);
