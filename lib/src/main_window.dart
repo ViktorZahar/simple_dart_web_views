@@ -7,7 +7,6 @@ MainWindow mainWindow = MainWindow();
 
 class MainWindow {
   MainWindow() {
-    root = DivElement();
     root.style
       ..width = '100%'
       ..height = '100%'
@@ -15,29 +14,26 @@ class MainWindow {
       ..justifyContent = 'center'
       ..flexDirection = 'column';
 
-    navPanel = NavPanel();
+    root.children..add(navPanel.root)..add(display);
 
-    display = DivElement();
     display.style
       ..width = '100%'
       ..height = '100%'
       ..flexDirection = 'column';
-
-    root.children.add(navPanel.root);
-    root.children.add(display);
   }
-  DivElement root;
-  NavPanel navPanel;
-  DivElement display;
-  View currentView;
-  View homeView;
+  DivElement root = DivElement();
+  NavPanel navPanel = NavPanel();
+  DivElement display = DivElement();
+  View? currentView;
+  View? homeView;
 
   void init(View homeView) {
     this.homeView = homeView;
     window.onHashChange.listen((event) {
-      final HashChangeEvent hashChangeEvent = event;
-      if (hashChangeEvent.newUrl != hashChangeEvent.oldUrl) {
-        openPath(window.location.hash.replaceFirst('#', ''));
+      if (event is HashChangeEvent) {
+        if (event.newUrl != event.oldUrl) {
+          openPath(window.location.hash.replaceFirst('#', ''));
+        }
       }
     });
     if (window.location.hash.isEmpty) {
@@ -62,13 +58,15 @@ class MainWindow {
   void openView(View view) {
     var newHash = '';
     var iterateView = view;
-    while (iterateView.getParentView() != null) {
+    var parentView = iterateView.getParentView();
+    while (parentView != null) {
       if (newHash.isEmpty) {
         newHash = iterateView.getId();
       } else {
         newHash = '${iterateView.getId()}/$newHash';
       }
-      iterateView = iterateView.getParentView();
+      iterateView = parentView;
+      parentView = iterateView.getParentView();
     }
     window.location.hash = newHash;
   }
@@ -85,12 +83,15 @@ class MainWindow {
         pathView = await pathView.getChildViewById(viewId);
       }
     }
+    if (pathView == null) {
+      throw Exception('View by path "$path" not found');
+    }
     return pathView;
   }
 
   void refreshNavPanel() {
     navPanel.clear();
-    var parentView = currentView.getParentView();
+    var parentView = currentView?.getParentView();
     final views = [];
     while (parentView != null) {
       views.insert(0, parentView);
@@ -101,7 +102,7 @@ class MainWindow {
     for (var idx = 0; idx < views.length; idx++) {
       final view = views[idx];
       final button =
-          navPanel.addButton(view.getCaption(), image: view.captionIsImage());
+          navPanel.addButton(view.getCaption(), isImage: view.captionIsImage());
       if (idx < views.length - 1) {
         button.caption = '${button.caption} \\';
       } else {

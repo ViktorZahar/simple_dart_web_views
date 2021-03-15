@@ -9,7 +9,6 @@ import 'dialog_example_view.dart';
 class HomeView with View {
   HomeView() {
     final viewContnet = HVPanel()..vertical();
-
     nodeRoot = viewContnet.nodeRoot;
     final header = HeadingElement.h1()..text = 'Home';
     viewContnet.nodeRoot.children.add(header);
@@ -17,16 +16,16 @@ class HomeView with View {
     final dialogExampleButton = SimpleButton()
       ..caption = 'Dialog example'
       ..onClick((event) {
-        dialogExampleView ??= DialogExampleView(this);
-        mainWindow.openView(dialogExampleView);
+        dialogExampleView = DialogExampleView(this);
+        mainWindow.openView(dialogExampleView!);
       });
     buttons.add(dialogExampleButton);
     viewContnet.add(buttons);
   }
 
   @override
-  Element nodeRoot;
-  DialogExampleView dialogExampleView;
+  Element nodeRoot = DivElement();
+  DialogExampleView? dialogExampleView;
 
   @override
   Map<String, String> getChindrenCaptions() {
@@ -42,17 +41,16 @@ class HomeView with View {
   String getCaption() => 'Home';
 
   @override
-  View getParentView() => null;
+  View? getParentView() => null;
 
   @override
   void afterShow() {}
 
   @override
-  Future<View> getChildViewById(String id) async {
+  Future<View?> getChildViewById(String id) async {
     switch (id) {
       case DialogExampleView.id:
         return DialogExampleView(this);
-        break;
     }
     throw Exception('Unknown view');
   }

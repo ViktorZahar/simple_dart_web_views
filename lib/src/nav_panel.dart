@@ -16,9 +16,9 @@ class NavPanel {
 
   DivElement root = DivElement();
 
-  NavPanelButton addButton(String caption, {bool image = false}) {
+  NavPanelButton addButton(String caption, {bool isImage = false}) {
     final ret = NavPanelButton();
-    if (image) {
+    if (isImage) {
       ret.image = caption;
     } else {
       ret.caption = caption;

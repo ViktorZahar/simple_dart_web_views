@@ -12,12 +12,12 @@ mixin View {
 
   bool captionIsImage() => false;
 
-  View getParentView();
+  View? getParentView();
 
   // getChindrenCaptions - возвращает мапу подчиненных вьюх {id, caption}
   Map<String, String> getChindrenCaptions() => {};
 
-  Future<View> getChildViewById(String id) async => null;
+  Future<View?> getChildViewById(String id) async => null;
 
   void afterShow() {}
 

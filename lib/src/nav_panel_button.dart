@@ -2,7 +2,6 @@ import 'dart:html';
 
 class NavPanelButton {
   NavPanelButton() {
-    root = DivElement();
     root.style
       ..padding = '5px'
       ..height = '100%'
@@ -11,19 +10,16 @@ class NavPanelButton {
       ..cursor = 'pointer'
       ..alignItems = 'center'
       ..justifyContent = 'center';
-    imageElement = ImageElement()..style.height = '100%';
-    spanElement = SpanElement()..style.color = 'white';
-    root.children.add(imageElement);
-    root.children.add(spanElement);
+    root.children..add(imageElement)..add(spanElement);
   }
-  DivElement root;
-  ImageElement imageElement;
-  SpanElement spanElement;
-  String _imagePath;
+  DivElement root = DivElement();
+  ImageElement imageElement = ImageElement()..style.height = '100%';
+  SpanElement spanElement = SpanElement()..style.color = 'white';
+  String? _imagePath;
 
   set caption(String caption) => spanElement.text = '$caption';
 
-  String get caption => spanElement.text;
+  String get caption => spanElement.text ?? '';
 
   set image(String imagePath) {
     _imagePath = imagePath;
@@ -31,5 +27,5 @@ class NavPanelButton {
     caption = '';
   }
 
-  String get image => _imagePath;
+  String get image => _imagePath ?? '';
 }
