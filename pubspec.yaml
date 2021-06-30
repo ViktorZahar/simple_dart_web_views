@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   simple_dart_web_widgets:
-    path: ../simple_dart_web_widgets
+      git: https://github.com/ViktorZahar/simple_dart_web_widgets.git
 
 dev_dependencies:
   build_runner: ^1.12.1
