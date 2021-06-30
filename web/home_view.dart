@@ -6,10 +6,9 @@ import 'package:simple_dart_web_widgets/widgets.dart';
 
 import 'dialog_example_view.dart';
 
-class HomeView with View {
+class HomeView extends View {
   HomeView() {
     final viewContnet = HVPanel()..vertical();
-    nodeRoot = viewContnet.nodeRoot;
     final header = HeadingElement.h1()..text = 'Home';
     viewContnet.nodeRoot.children.add(header);
     final buttons = HVPanel();
@@ -23,8 +22,6 @@ class HomeView with View {
     viewContnet.add(buttons);
   }
 
-  @override
-  Element nodeRoot = DivElement();
   DialogExampleView? dialogExampleView;
 
   @override

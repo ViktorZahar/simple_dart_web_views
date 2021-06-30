@@ -1,20 +1,15 @@
-import 'dart:html';
+import 'package:simple_dart_web_widgets/widgets.dart';
 
 import 'nav_panel_button.dart';
 import 'views_theme.dart';
 
-class NavPanel {
+class NavPanel extends HVPanel {
   NavPanel() {
-    root.style
-      ..flexDirection = 'row'
-      ..flexShrink = '0'
-      ..width = '100%'
-      ..height = '50px';
-    root.classes.add(ViewsTheme.navPanel);
-    root.attributes['name'] = 'NavPanel';
+    fullWidth();
+    height = '50px';
+    nodeRoot.classes.add(ViewsTheme.navPanel);
+    varName('NavPanel');
   }
-
-  DivElement root = DivElement();
 
   NavPanelButton addButton(String caption, {bool isImage = false}) {
     final ret = NavPanelButton();
@@ -23,11 +18,7 @@ class NavPanel {
     } else {
       ret.caption = caption;
     }
-    root.children.add(ret.root);
+    add(ret);
     return ret;
-  }
-
-  void clear() {
-    root.children.clear();
   }
 }

@@ -1,31 +1,47 @@
 import 'dart:async';
 import 'dart:html';
 
+import 'package:simple_dart_web_widgets/widgets.dart';
+
 import '../views.dart';
 
 MainWindow mainWindow = MainWindow();
 
-class MainWindow {
+class MainWindow extends HVPanel {
   MainWindow() {
-    root.style
-      ..width = '100%'
-      ..height = '100%'
-      ..display = 'flex'
-      ..justifyContent = 'center'
-      ..flexDirection = 'column';
-
-    root.children..add(navPanel.root)..add(display);
-
-    display.style
-      ..width = '100%'
-      ..height = '100%'
-      ..flexDirection = 'column';
+    createUi();
   }
-  DivElement root = DivElement();
-  NavPanel navPanel = NavPanel();
-  DivElement display = DivElement();
+
+  NavPanel navPanel = NavPanel()
+    ..fullWidth()
+    ..fillContent();
+  HVPanel mainButtonPanel = HVPanel()
+    ..varName('mainButtonPanel')
+    ..addCssClasses(['navPanel'])
+    ..width = ''
+    ..setPadding(2)
+    ..setSpaceBetweenItems(2);
+  HVPanel display = HVPanel()
+    ..varName('display')
+    ..vertical()
+    ..fillContent()
+    ..fullSize()
+    ..nodeRoot.style.overflow = 'auto';
+  BlockStateLabel blockStateLabel = BlockStateLabel()
+    ..caption = ''
+    ..hide();
   View? currentView;
   View? homeView;
+
+  void createUi() {
+    vertical();
+    nodeRoot.children.add(blockStateLabel.backgroundElement);
+    final topPanel = HVPanel()
+      ..varName('topPanel')
+      ..fullWidth()
+      ..addAll([navPanel, mainButtonPanel]);
+    addAll([topPanel, display]);
+  }
 
   void init(View homeView) {
     this.homeView = homeView;
@@ -47,11 +63,11 @@ class MainWindow {
   void _showView(View view) {
     currentView = view;
     if (display.children.isNotEmpty) {
-      display.children.removeLast();
+      display.clear();
     }
     refreshNavPanel();
     view.beforeShow();
-    display.children.add(view.nodeRoot);
+    display.add(view);
     view.afterShow();
   }
 
@@ -102,15 +118,21 @@ class MainWindow {
     for (var idx = 0; idx < views.length; idx++) {
       final view = views[idx];
       final button =
-          navPanel.addButton(view.getCaption(), isImage: view.captionIsImage());
+      navPanel.addButton(view.getCaption(), isImage: view.captionIsImage());
       if (idx < views.length - 1) {
         button.caption = '${button.caption} \\';
       } else {
         button.spanElement.style.fontWeight = 'bold';
       }
-      button.root.onClick.listen((event) {
+      button.nodeRoot.onClick.listen((event) {
         openView(view);
       });
     }
+  }
+
+  void showFatalError(String err) {
+    blockStateLabel.showText(err).then((e) {
+      window.location.assign('/');
+    });
   }
 }

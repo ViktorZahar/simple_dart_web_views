@@ -8,5 +8,5 @@ export 'dialog_example_view.dart';
 
 void main() {
   mainWindow.init(HomeView());
-  querySelector('body')?.children.add(mainWindow.root);
+  querySelector('body')?.children.add(mainWindow.nodeRoot);
 }

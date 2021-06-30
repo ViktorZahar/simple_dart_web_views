@@ -1,10 +1,9 @@
 import 'dart:async';
-import 'dart:html';
+
+import 'package:simple_dart_web_widgets/widgets.dart';
 
 /// View component
-mixin View {
-  Element get nodeRoot;
-
+abstract class View extends HVPanel {
   String getId();
 
   // getCaption возвращает заголовок
@@ -15,7 +14,7 @@ mixin View {
   View? getParentView();
 
   // getChindrenCaptions - возвращает мапу подчиненных вьюх {id, caption}
-  Map<String, String> getChindrenCaptions() => {};
+  Map<String, String> getChildrenCaptions() => {};
 
   Future<View?> getChildViewById(String id) async => null;
 

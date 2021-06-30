@@ -1,8 +1,10 @@
 import 'dart:html';
 
-class NavPanelButton {
+import 'package:simple_dart_web_widgets/widgets.dart';
+
+class NavPanelButton extends Component {
   NavPanelButton() {
-    root.style
+    nodeRoot.style
       ..padding = '5px'
       ..height = '100%'
       ..textAlign = 'center'
@@ -10,9 +12,11 @@ class NavPanelButton {
       ..cursor = 'pointer'
       ..alignItems = 'center'
       ..justifyContent = 'center';
-    root.children..add(imageElement)..add(spanElement);
+    nodeRoot.children..add(imageElement)..add(spanElement);
   }
-  DivElement root = DivElement();
+
+  @override
+  DivElement nodeRoot = DivElement();
   ImageElement imageElement = ImageElement()..style.height = '100%';
   SpanElement spanElement = SpanElement()..style.color = 'white';
   String? _imagePath;
