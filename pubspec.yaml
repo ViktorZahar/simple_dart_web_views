@@ -6,15 +6,15 @@ publish_to: none
 author: Viktor Zakharov  <viktorzahar@gmail.com>
 
 environment:
-  sdk: '^2.12.1'
+  sdk: '^2.13.4'
 
 dependencies:
   simple_dart_web_widgets:
       git: https://github.com/ViktorZahar/simple_dart_web_widgets.git
 
 dev_dependencies:
-  build_runner: ^1.12.1
-  build_web_compilers: ^2.16.5
+  build_runner: ^2.0.5
+  build_web_compilers:
 
 
 web:
