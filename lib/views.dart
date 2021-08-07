@@ -1,3 +1,5 @@
+library views;
+
 export 'src/main_window.dart';
 export 'src/nav_panel.dart';
 export 'src/nav_panel_button.dart';
