@@ -6,14 +6,10 @@ import 'package:simple_dart_web_widgets/widgets.dart';
 abstract class View extends HVPanel {
   String getId();
 
-  // getCaption возвращает заголовок
   String getCaption();
 
-  bool captionIsImage() => false;
+  View? getParentView() => null;
 
-  View? getParentView();
-
-  // getChindrenCaptions - возвращает мапу подчиненных вьюх {id, caption}
   Map<String, String> getChildrenCaptions() => {};
 
   Future<View?> getChildViewById(String id) async => null;
@@ -21,4 +17,14 @@ abstract class View extends HVPanel {
   void afterShow() {}
 
   void beforeShow() {}
+
+  Component getTitleComponent() => SimpleLink()
+    ..caption = getCaption()
+    ..addCssClasses(['titleComponent'])
+    ..href = '#${getId()}';
+
+  Component getNavMenuComponent() => SimpleLink()
+    ..type = SimpleButtonType.basic
+    ..caption = getCaption()
+    ..href = '#${getId()}';
 }

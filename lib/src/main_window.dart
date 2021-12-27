@@ -12,35 +12,51 @@ class MainWindow extends HVPanel {
     createUi();
   }
 
-  NavPanel navPanel = NavPanel()
+  Map<String, View> registeredViewsMap = <String, View>{};
+  List<View> registeredViewsList = <View>[];
+
+  HVPanel navMenuPanel = HVPanel()
+    ..varName('navMenu')
+    ..addCssClasses(['navMenu'])
+    ..visible = false
+    ..setPadding(5)
+    ..setSpaceBetweenItems(5)
+    ..vertical();
+
+  HVPanel centralVerticalPanel = HVPanel()
+    ..varName('centralVerticalPanel')
+    ..fillContent()
+    ..fullSize()
+    ..vertical();
+
+  TitlePanel titlePanel = TitlePanel()
     ..fullWidth()
     ..fillContent();
-  HVPanel mainButtonPanel = HVPanel()
-    ..varName('mainButtonPanel')
-    ..addCssClasses(['navPanel'])
+  HVPanel titleRightButtonsPanel = HVPanel()
+    ..varName('titleRightButtonsPanel')
+    ..addCssClasses(['titlePanel'])
     ..width = ''
     ..setPadding(2)
     ..setSpaceBetweenItems(2);
+
   HVPanel display = HVPanel()
     ..varName('display')
     ..vertical()
     ..fillContent()
     ..fullSize()
     ..nodeRoot.style.overflow = 'auto';
-  BlockStateLabel blockStateLabel = BlockStateLabel()
-    ..caption = ''
-    ..hide();
+
   View? currentView;
   View? homeView;
 
   void createUi() {
-    vertical();
-    nodeRoot.children.add(blockStateLabel.backgroundElement);
+    nodeRoot.children.add(modalStatePanel.nodeRoot);
     final topPanel = HVPanel()
       ..varName('topPanel')
       ..fullWidth()
-      ..addAll([navPanel, mainButtonPanel]);
-    addAll([topPanel, display]);
+      ..addAll([titlePanel, titleRightButtonsPanel]);
+    centralVerticalPanel.addAll([topPanel, display]);
+    addAll([navMenuPanel, centralVerticalPanel]);
   }
 
   void init(View homeView) {
@@ -65,7 +81,8 @@ class MainWindow extends HVPanel {
     if (display.children.isNotEmpty) {
       display.clear();
     }
-    refreshNavPanel();
+    refreshTitlePanel();
+    refreshLeftVerticalPanel();
     view.beforeShow();
     display.add(view);
     view.afterShow();
@@ -93,7 +110,9 @@ class MainWindow extends HVPanel {
 
   Future<View> getViewByPath(String path) async {
     final viewIds = path.split('/');
-    var pathView = homeView;
+    final rootId = viewIds.removeAt(0);
+    final rootView = registeredViewsMap[rootId];
+    var pathView = rootView;
     for (final viewId in viewIds) {
       if (pathView != null && viewId.isNotEmpty) {
         pathView = await pathView.getChildViewById(viewId);
@@ -105,34 +124,55 @@ class MainWindow extends HVPanel {
     return pathView;
   }
 
-  void refreshNavPanel() {
-    navPanel.clear();
-    var parentView = currentView?.getParentView();
-    final views = [];
+  void refreshTitlePanel() {
+    titlePanel.clear();
+    var parentView = currentView!.getParentView();
+    final views = <View>[currentView!];
     while (parentView != null) {
-      views.insert(0, parentView);
+      views.add(parentView);
       parentView = parentView.getParentView();
     }
-    views.add(currentView);
 
-    for (var idx = 0; idx < views.length; idx++) {
-      final view = views[idx];
-      final button =
-      navPanel.addButton(view.getCaption(), isImage: view.captionIsImage());
-      if (idx < views.length - 1) {
-        button.caption = '${button.caption} \\';
+    for (final view in views.reversed) {
+      titlePanel.addTitleButton(view.getTitleComponent());
+    }
+  }
+
+  void refreshLeftVerticalPanel() {
+    navMenuPanel.clear();
+    for (final view in registeredViewsList) {
+      final navMenuComponent = view.getNavMenuComponent();
+      if (view == currentView) {
+        navMenuComponent.addCssClasses(['navMenuSelected']);
       } else {
-        button.spanElement.style.fontWeight = 'bold';
+        navMenuComponent.addCssClasses(['navMenuButton']);
       }
-      button.nodeRoot.onClick.listen((event) {
-        openView(view);
-      });
+      navMenuPanel.add(navMenuComponent);
     }
   }
 
   void showFatalError(String err) {
-    blockStateLabel.showText(err).then((e) {
+    modalStatePanel.onClick = () {
       window.location.assign('/');
-    });
+    };
+    modalStatePanel.visible = true;
+    modalStatePanel.add(SimpleLabel()
+      ..caption = err
+      ..fontSize = 16);
+  }
+
+  void showError(String err) {
+    modalStatePanel.onClick = () {
+      modalStatePanel.visible = false;
+    };
+    modalStatePanel.visible = true;
+    modalStatePanel.add(SimpleLabel()
+      ..caption = err
+      ..fontSize = 16);
+  }
+
+  void registerView(View view) {
+    registeredViewsMap[view.getId()] = view;
+    registeredViewsList.add(view);
   }
 }

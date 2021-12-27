@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:html';
 
 import 'package:simple_dart_web_views/views.dart';
 import 'package:simple_dart_web_widgets/widgets.dart';
@@ -8,9 +7,8 @@ import 'dialog_example_view.dart';
 
 class HomeView extends View {
   HomeView() {
-    final viewContnet = HVPanel()..vertical();
-    final header = HeadingElement.h1()..text = 'Home';
-    viewContnet.nodeRoot.children.add(header);
+    vertical();
+
     final buttons = HVPanel();
     final dialogExampleButton = SimpleButton()
       ..caption = 'Dialog example'
@@ -19,13 +17,13 @@ class HomeView extends View {
         mainWindow.openView(dialogExampleView!);
       });
     buttons.add(dialogExampleButton);
-    viewContnet.add(buttons);
+    add(buttons);
   }
 
   DialogExampleView? dialogExampleView;
 
   @override
-  Map<String, String> getChindrenCaptions() {
+  Map<String, String> getChildrenCaptions() {
     final ret = <String, String>{};
     ret[DialogExampleView.id] = DialogExampleView.caption;
     return ret;
