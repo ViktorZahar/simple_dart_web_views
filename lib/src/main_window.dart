@@ -134,6 +134,12 @@ class MainWindow extends HVPanel {
     }
 
     for (final view in views.reversed) {
+      if (titlePanel.children.isNotEmpty) {
+        titlePanel.add(SimpleLabel()
+          ..caption = '\\'
+          ..width = '15px'
+          ..horizontalAlign = 'center');
+      }
       titlePanel.addTitleButton(view.getTitleComponent());
     }
   }
