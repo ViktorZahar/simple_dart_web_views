@@ -24,7 +24,7 @@ abstract class View extends HVPanel {
     ..href = '#${getId()}';
 
   Component getNavMenuComponent() => SimpleLink()
-    ..type = SimpleButtonType.basic
+    ..type = SimpleButtonType.noStyle
     ..caption = getCaption()
     ..href = '#${getId()}';
 }
