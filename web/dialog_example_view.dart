@@ -4,7 +4,7 @@ import 'package:simple_dart_web_views/views.dart';
 import 'package:simple_dart_web_widgets/widgets.dart';
 
 class DialogExampleView extends StandartView {
-  DialogExampleView(parentView) : super(parentView) {
+  DialogExampleView(parentView) : super() {
     dartClassName('DialogExampleView');
   }
 
