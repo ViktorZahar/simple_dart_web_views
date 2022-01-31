@@ -4,7 +4,7 @@ import '../views.dart';
 
 // StandartView - стандартный view c контрольной панелью
 abstract class StandartView extends View {
-  StandartView(this.parent) {
+  StandartView() {
     vertical();
     fullSize();
     fillContent();
@@ -26,12 +26,8 @@ abstract class StandartView extends View {
     addAll([controlPanel, viewContent]);
   }
 
-  final View parent;
   final HVPanel controlPanel = HVPanel();
   final HVPanel viewContent = HVPanel();
-
-  @override
-  View getParentView() => parent;
 
   void fillControlPanel(HVPanel controlPanel) {}
 
