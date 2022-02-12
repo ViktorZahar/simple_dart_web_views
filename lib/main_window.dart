@@ -1,47 +1,24 @@
 import 'dart:async';
 import 'dart:html';
 
-import 'package:simple_dart_web_widgets/widgets.dart';
+import 'package:simple_dart_web_widgets/hv_panel.dart';
+import 'package:simple_dart_web_widgets/labels/simple_label.dart';
+import 'package:simple_dart_web_widgets/modal_state_panel.dart';
 
-import '../views.dart';
-
-MainWindow mainWindow = MainWindow();
+import 'view.dart';
 
 class MainWindow extends HVPanel {
   MainWindow() {
-    createUi();
+    fullSize();
+    fillContent();
   }
 
   Map<String, View> registeredViewsMap = <String, View>{};
   List<View> registeredViewsList = <View>[];
 
-  HVPanel navMenuPanel = HVPanel()
-    ..varName('navMenu')
-    ..addCssClasses(['navMenu'])
-    ..visible = false
-    ..setPadding(5)
-    ..setSpaceBetweenItems(5)
-    ..vertical();
-
-  HVPanel centralVerticalPanel = HVPanel()
-    ..varName('centralVerticalPanel')
-    ..fillContent()
-    ..fullSize()
-    ..vertical();
-
-  TitlePanel titlePanel = TitlePanel()
-    ..fullWidth()
-    ..fillContent();
-  HVPanel titleRightButtonsPanel = HVPanel()
-    ..varName('titleRightButtonsPanel')
-    ..addCssClasses(['titlePanel'])
-    ..width = ''
-    ..setPadding(2)
-    ..setSpaceBetweenItems(2);
-
   HVPanel display = HVPanel()
     ..varName('display')
-    ..vertical()
+    ..vertical = true
     ..fillContent()
     ..fullSize()
     ..nodeRoot.style.overflow = 'auto';
@@ -49,18 +26,40 @@ class MainWindow extends HVPanel {
   View? currentView;
   View? homeView;
 
-  void createUi() {
-    nodeRoot.children.add(modalStatePanel.nodeRoot);
-    final topPanel = HVPanel()
-      ..varName('topPanel')
-      ..fullWidth()
-      ..addAll([titlePanel, titleRightButtonsPanel]);
-    centralVerticalPanel.addAll([topPanel, display]);
-    addAll([navMenuPanel, centralVerticalPanel]);
+  // ignore:close_sinks
+  final StreamController<View> _onViewChange = StreamController<View>();
+
+  // ignore:close_sinks
+  final StreamController<View> _onRegisterView = StreamController<View>();
+
+  Stream<View> get onViewChange => _onViewChange.stream;
+
+  Stream<View> get onRegisterView => _onRegisterView.stream;
+
+  void switchTheme(String themeName) {
+    final linkElements = querySelectorAll('link');
+    final headElement = querySelector('head')!;
+    final themeElement = linkElements.singleWhere((element) {
+      if (element is LinkElement) {
+        if (element.href.endsWith('_theme.css')) {
+          return true;
+        }
+      }
+      return false;
+    }, orElse: () {
+      final newElem = LinkElement()..rel = 'stylesheet';
+      headElement.children.add(newElem);
+      return newElem;
+    });
+    if (themeElement is LinkElement) {
+      themeElement.href = '${themeName}_theme.css';
+    }
   }
 
-  void init(View homeView) {
+  void init(View homeView, {theme = 'default', nodeSelector = 'body'}) {
     this.homeView = homeView;
+    configureMainWindow();
+    switchTheme(theme);
     window.onHashChange.listen((event) {
       if (event is HashChangeEvent) {
         if (event.newUrl != event.oldUrl) {
@@ -74,15 +73,18 @@ class MainWindow extends HVPanel {
       final openUrl = window.location.hash.replaceFirst('#', '');
       openPath(openUrl);
     }
+    nodeRoot.children.add(modalStatePanel.nodeRoot);
+    querySelector(nodeSelector)?.children.add(nodeRoot);
   }
+
+  void configureMainWindow() {}
 
   void _showView(View view) {
     currentView = view;
     if (display.children.isNotEmpty) {
       display.clear();
     }
-    refreshTitlePanel();
-    refreshLeftVerticalPanel();
+    _onViewChange.sink.add(view);
     view.beforeShow();
     display.add(view);
     view.afterShow();
@@ -124,61 +126,25 @@ class MainWindow extends HVPanel {
     return pathView;
   }
 
-  void refreshTitlePanel() {
-    titlePanel.clear();
-    var parentView = currentView!.getParentView();
-    final views = <View>[currentView!];
-    while (parentView != null) {
-      views.add(parentView);
-      parentView = parentView.getParentView();
-    }
-
-    for (final view in views.reversed) {
-      if (titlePanel.children.isNotEmpty) {
-        titlePanel.add(SimpleLabel()
-          ..caption = '\\'
-          ..width = '15px'
-          ..horizontalAlign = 'center');
-      }
-      titlePanel.addTitleButton(view.getTitleComponent());
-    }
-  }
-
-  void refreshLeftVerticalPanel() {
-    navMenuPanel.clear();
-    for (final view in registeredViewsList) {
-      final navMenuComponent = view.getNavMenuComponent();
-      if (view == currentView) {
-        navMenuComponent.addCssClasses(['navMenuSelected']);
-      } else {
-        navMenuComponent.addCssClasses(['navMenuButton']);
-      }
-      navMenuPanel.add(navMenuComponent);
-    }
-  }
-
   void showFatalError(String err) {
-    modalStatePanel.onClick = () {
+    modalStatePanel.onClick.listen((event) {
       window.location.assign('/');
-    };
+    });
     modalStatePanel.visible = true;
-    modalStatePanel.add(SimpleLabel()
-      ..caption = err
-      ..fontSize = 16);
+    modalStatePanel.add(SimpleLabel()..caption = err);
   }
 
   void showError(String err) {
-    modalStatePanel.onClick = () {
+    modalStatePanel.onClick.listen((event) {
       modalStatePanel.visible = false;
-    };
+    });
     modalStatePanel.visible = true;
-    modalStatePanel.add(SimpleLabel()
-      ..caption = err
-      ..fontSize = 16);
+    modalStatePanel.add(SimpleLabel()..caption = err);
   }
 
   void registerView(View view) {
     registeredViewsMap[view.getId()] = view;
     registeredViewsList.add(view);
+    _onRegisterView.sink.add(view);
   }
 }

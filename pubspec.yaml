@@ -1,17 +1,20 @@
 name: simple_dart_web_views
 description: Simple dart web views.
-version: 0.0.2
+version: 0.0.3
 publish_to: none
 
+platforms:
+  web:
+
 environment:
-  sdk: '^2.13.4'
+  sdk: '^2.16.0'
 
 dependencies:
   simple_dart_web_widgets:
-    git: https://github.com/ViktorZahar/simple_dart_web_widgets.git
+    path: ../simple_dart_web_widgets
 
 dev_dependencies:
-  build_runner: ^2.0.5
+  build_runner: ^2.1.7
   build_web_compilers:
 
 
