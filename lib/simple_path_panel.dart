@@ -1,66 +1,67 @@
 import 'package:simple_dart_web_widgets/abstract_component.dart';
-import 'package:simple_dart_web_widgets/hv_panel.dart';
 import 'package:simple_dart_web_widgets/labels/simple_label.dart';
 import 'package:simple_dart_web_widgets/labels/simple_link.dart';
+import 'package:simple_dart_web_widgets/panel.dart';
 
+import 'main_window.dart';
 import 'view.dart';
 
-class SimplePathPanel extends HVPanel {
-  SimplePathPanel() {
+class SimplePathPanel extends PanelComponent {
+  SimplePathPanel() : super('SimplePathPanel') {
     fullWidth();
     stride = '5px';
   }
 
   void refreshPathPanel(View currentView) {
     clear();
-    var parentView = currentView.getParentView();
-    final viewsPath = <View>[currentView];
-    while (parentView != null) {
-      viewsPath.add(parentView);
-      parentView = parentView.getParentView();
+    var lastParentView = currentView.parent;
+    final viewsList = <View>[currentView];
+    while (lastParentView != null) {
+      viewsList.add(lastParentView);
+      lastParentView = lastParentView.parent;
     }
 
-    var url = '#';
-    for (final view in viewsPath.reversed) {
+    for (final view in viewsList.reversed) {
       if (children.isNotEmpty) {
         add(SimpleLabel()
           ..caption = '\\'
           ..width = '15px'
           ..horizontalAlign = 'center');
-        url += '/';
       }
-      // ignore:use_string_buffers
-      url += view.getId();
       if (view is CustomPathPanelView) {
-        add(view.getPathPanelComponent()..url = url);
+        add((view as CustomPathPanelView).getPathPanelComponent()
+          ..viewPath = fullPathOfView(view));
       } else {
         add(SimplePathButton()
-          ..url = url
-          ..caption = view.getCaption());
+          ..viewPath = fullPathOfView(view)
+          ..caption = view.caption);
       }
     }
   }
 }
 
-abstract class CustomPathPanelView extends View {
+// ignore: one_member_abstracts
+abstract class CustomPathPanelView {
   AbstractPathPanelComponent getPathPanelComponent();
 }
 
 abstract class AbstractPathPanelComponent extends Component {
-  String url = '';
+  AbstractPathPanelComponent(String className) : super(className);
+  String viewPath = '';
 }
 
 class SimplePathButton extends SimpleLink
     implements AbstractPathPanelComponent {
   SimplePathButton() {
+    addCssClass('SimplePathButton');
     fullHeight();
   }
 
   @override
-  String get url => href;
+  String get viewPath => href;
 
   @override
-  set url(String _url) {
-    href = _url;
+  set viewPath(String _url) {
+    href = '$_url';
   }
 }

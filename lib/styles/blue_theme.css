@@ -9,11 +9,16 @@
 .SimpleNavBarButton {
     color:white;
     background: #1f2022;
+    text-decoration: none;
 }
 
 .SimpleNavBarButton.Active {
     color: #fee252;
     background: #1a1a1a;
+}
+
+.SimpleNavBarButton:hover{
+    background:#2e55b4;
 }
 
 .SimplePathPanel{
@@ -24,4 +29,5 @@
 
 .SimplePathButton{
     color:  #f0f0f0;
+    text-decoration: none;
 }

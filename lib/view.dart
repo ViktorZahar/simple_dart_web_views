@@ -1,18 +1,20 @@
 import 'dart:async';
 
-import 'package:simple_dart_web_widgets/hv_panel.dart';
+import 'package:simple_dart_web_widgets/panel.dart';
 
-/// View component
-abstract class View extends HVPanel {
-  String getId();
+// Abstract View
+abstract class View extends PanelComponent {
+  View(String className) : super(className);
 
-  String getCaption();
+  String id = '';
+  String caption = '';
+  Map<String, String> params = {};
+  View? parent;
 
-  View? getParentView() => null;
+  bool isChild = false;
 
-  Map<String, String> getChildrenCaptions() => {};
-
-  Future<View?> getChildViewById(String id) async => null;
+  Future<void> init() async {
+  }
 
   void afterShow() {}
 

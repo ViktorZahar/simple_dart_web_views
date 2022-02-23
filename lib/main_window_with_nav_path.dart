@@ -1,4 +1,4 @@
-import 'package:simple_dart_web_widgets/hv_panel.dart';
+import 'package:simple_dart_web_widgets/panel.dart';
 
 import 'main_window.dart';
 import 'simple_nav_bar.dart';
@@ -11,10 +11,10 @@ class MainWindowWithNavPath extends MainWindow {
   @override
   void configureMainWindow() {
     add(simpleNavBar);
-    final verticalPanel = HVPanel()
+    final verticalPanel = Panel()
       ..vertical = true
       ..fullSize()
-      ..fillContent();
+      ..fillContent = true;
     add(verticalPanel);
     onRegisterView.listen((view) {
       simpleNavBar.addView(view);
