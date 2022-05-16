@@ -32,12 +32,7 @@ class MainWindow extends PanelComponent {
 
   final StreamController<View> _onViewChange = StreamController<View>();
 
-  final StreamController<View> _onRegisterView =
-      StreamController<View>(sync: true);
-
   Stream<View> get onViewChange => _onViewChange.stream;
-
-  Stream<View> get onRegisterView => _onRegisterView.stream;
 
   LoadIndicator loadIndicator = LoadIndicator();
 
@@ -63,18 +58,46 @@ class MainWindow extends PanelComponent {
     loadIndicator.hide();
   }
 
+  void updateStateValue(String varName, String value) {
+    final oldHash = window.location.hash;
+    if (oldHash.contains('~')) {
+      final split = oldHash.split('~');
+      final currentStateStr = split.last;
+      final urlInfo = ViewUrlInfo.fromUrl(currentStateStr);
+      urlInfo.state[varName] = value;
+      // window.location.hash = '${split.first}~${urlInfo.stateString}';
+      // window.location.replace('${split.first}~${urlInfo.stateString}');
+      window.history
+          .replaceState({}, '', '${split.first}~${urlInfo.stateString}');
+    } else {
+      final urlInfo = ViewUrlInfo();
+      urlInfo.state[varName] = value;
+      // window.location.hash='$oldHash~${urlInfo.stateString}' ;
+      // window.location.replace('$oldHash~${urlInfo.stateString}');
+      window.history.replaceState({}, '', '$oldHash~${urlInfo.stateString}');
+    }
+  }
+
   void init(View homeView,
       {String theme = 'default', String nodeSelector = 'body'}) {
     this.homeView = homeView;
     window.onHashChange.listen((event) {
       if (event is HashChangeEvent) {
-        if (event.newUrl != event.oldUrl) {
+        var oldUrl = event.oldUrl ?? '';
+        var newUrl = event.newUrl ?? '';
+        if (oldUrl.contains('~')) {
+          oldUrl = oldUrl.substring(0, oldUrl.indexOf('~'));
+        }
+        if (newUrl.contains('~')) {
+          newUrl = newUrl.substring(0, newUrl.indexOf('~'));
+        }
+        if (newUrl != oldUrl) {
           openPath(window.location.hash.replaceFirst('#', ''));
         }
       }
     });
     if (window.location.hash.isEmpty) {
-      _showView(homeView);
+      openView(homeView);
     } else {
       final openUrl = window.location.hash.replaceFirst('#', '');
       openPath(openUrl);
@@ -116,6 +139,9 @@ class MainWindow extends PanelComponent {
   }
 
   Future<View> getViewByPath(String path) async {
+    if (path.isEmpty) {
+      return homeView!;
+    }
     final viewUrls = path.split('/');
     final firstUrl = viewUrls.removeAt(0);
     final firstViewUrlInfo = ViewUrlInfo.fromUrl(firstUrl);
@@ -123,7 +149,9 @@ class MainWindow extends PanelComponent {
     if (firstView == null) {
       throw Exception('view "${firstViewUrlInfo.id}" is not registered');
     }
-    firstView.params = firstViewUrlInfo.params;
+    firstView
+      ..params = firstViewUrlInfo.params
+      ..state = firstViewUrlInfo.state;
     await firstView.init();
     var parentView = firstView;
     for (final viewUrl in viewUrls) {
@@ -135,7 +163,8 @@ class MainWindow extends PanelComponent {
         }
         childView
           ..parent = parentView
-          ..params = childViewUrlInfo.params;
+          ..params = childViewUrlInfo.params
+          ..state = childViewUrlInfo.state;
         await childView.init();
         parentView = childView;
       }
@@ -169,7 +198,6 @@ class MainWindow extends PanelComponent {
     }
     registeredViewsMap[view.id] = view;
     registeredViewsList.add(view);
-    _onRegisterView.sink.add(view);
   }
 
   void registerViews(List<View> views) {
@@ -177,7 +205,6 @@ class MainWindow extends PanelComponent {
   }
 
   void close() {
-    _onRegisterView.close();
     _onViewChange.close();
   }
 }
@@ -187,19 +214,34 @@ class ViewUrlInfo {
 
   factory ViewUrlInfo.fromUrl(String url) {
     final res = ViewUrlInfo();
-    if (url.contains('?')) {
-      final urlParts = url.split('?');
-      res
-        ..id = urlParts[0]
-        ..params = Uri.splitQueryString(urlParts[1]);
-    } else {
-      res.id = url;
+    var id = '';
+    var params = <String, String>{};
+    var state = <String, String>{};
+    if (url.contains('~')) {
+      final split = url.split('~');
+      url = split.first;
+      state = Uri.splitQueryString(split.last);
     }
+    if (url.contains('?')) {
+      final split = url.split('?');
+      id = split.first;
+      params = Uri.splitQueryString(split.last);
+    } else {
+      id = url;
+    }
+    res
+      ..id = id
+      ..params = params
+      ..state = state;
     return res;
   }
 
   String id = '';
   Map<String, String> params = <String, String>{};
+  Map<String, String> state = <String, String>{};
+
+  String get stateString =>
+      state.entries.map((e) => '${e.key}=${e.value}').join('&');
 }
 
 String fullPathOfView(View lastView) {

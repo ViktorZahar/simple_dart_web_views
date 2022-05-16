@@ -30,7 +30,7 @@ class MainWindowWithNavPathTheme extends MainWindow {
       ..fullSize()
       ..fillContent = true;
     add(verticalPanel);
-    onRegisterView.listen((view) {
+    registeredViewsList.forEach((view) {
       simpleNavBar.addView(view);
     });
     onViewChange.listen((currentView) {

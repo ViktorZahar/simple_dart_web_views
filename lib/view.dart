@@ -8,7 +8,9 @@ abstract class View extends PanelComponent {
 
   String id = '';
   String caption = '';
-  Map<String, String> params = {};
+  Map<String, String> params = <String, String>{};
+  Map<String, String> state = <String, String>{};
+
   View? parent;
 
   bool isChild = false;
