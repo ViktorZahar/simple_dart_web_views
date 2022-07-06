@@ -16,13 +16,17 @@ class MainWindowWithNavPath extends MainWindow {
       ..fullSize()
       ..fillContent = true;
     add(verticalPanel);
-    registeredViewsList.forEach((view) {
-      simpleNavBar.addView(view);
-    });
+    refreshNavPanel();
     onViewChange.listen((currentView) {
       simpleNavBar.refreshNavBar(currentView);
       simplePathPanel.refreshPathPanel(currentView);
     });
     verticalPanel.addAll([simplePathPanel, display]);
+  }
+
+  void refreshNavPanel() {
+    registeredViewsList.forEach((view) {
+      simpleNavBar.addView(view);
+    });
   }
 }

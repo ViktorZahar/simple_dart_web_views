@@ -8,6 +8,8 @@ import 'package:simple_dart_web_widgets/panel.dart';
 import 'package:simple_dart_web_widgets/utils.dart';
 
 import 'view.dart';
+import 'view_url_info.dart';
+
 
 class MainWindow extends PanelComponent {
   MainWindow() : super('MainWindow') {
@@ -19,7 +21,7 @@ class MainWindow extends PanelComponent {
   List<View> registeredViewsList = <View>[];
 
   Panel display = Panel()
-    ..varName('display')
+    ..varName='display'
     ..vertical = true
     ..fillContent = true
     ..fullSize()
@@ -30,66 +32,26 @@ class MainWindow extends PanelComponent {
 
   bool insertedToPage = false;
 
-  final StreamController<View> _onViewChange = StreamController<View>();
+  final StreamController<View> _onViewChange =
+      StreamController<View>.broadcast();
 
   Stream<View> get onViewChange => _onViewChange.stream;
 
   LoadIndicator loadIndicator = LoadIndicator();
 
-  void switchTheme(String themeName) {
-    loadIndicator.show(this);
-    final linkElements = querySelectorAll('link');
-    final headElement = querySelector('head')!;
-    final themeElement = linkElements.singleWhere((element) {
-      if (element is LinkElement) {
-        if (element.href.endsWith('_theme.css')) {
-          return true;
-        }
-      }
-      return false;
-    }, orElse: () {
-      final newElem = LinkElement()..rel = 'stylesheet';
-      headElement.children.add(newElem);
-      return newElem;
-    });
-    if (themeElement is LinkElement) {
-      themeElement.href = '${themeName}_theme.css';
-    }
-    loadIndicator.hide();
-  }
-
-  void updateStateValue(String varName, String value) {
-    final oldHash = window.location.hash;
-    if (oldHash.contains('~')) {
-      final split = oldHash.split('~');
-      final currentStateStr = split.last;
-      final urlInfo = ViewUrlInfo.fromUrl(currentStateStr);
-      urlInfo.state[varName] = value;
-      // window.location.hash = '${split.first}~${urlInfo.stateString}';
-      // window.location.replace('${split.first}~${urlInfo.stateString}');
-      window.history
-          .replaceState({}, '', '${split.first}~${urlInfo.stateString}');
-    } else {
-      final urlInfo = ViewUrlInfo();
-      urlInfo.state[varName] = value;
-      // window.location.hash='$oldHash~${urlInfo.stateString}' ;
-      // window.location.replace('$oldHash~${urlInfo.stateString}');
-      window.history.replaceState({}, '', '$oldHash~${urlInfo.stateString}');
-    }
-  }
-
-  void init(View homeView,
-      {String theme = 'default', String nodeSelector = 'body'}) {
+  void init(View homeView, List<View> views, {String nodeSelector = 'body'}) {
     this.homeView = homeView;
+    registerView(homeView);
+    views.forEach(registerView);
     window.onHashChange.listen((event) {
       if (event is HashChangeEvent) {
         var oldUrl = event.oldUrl ?? '';
         var newUrl = event.newUrl ?? '';
-        if (oldUrl.contains('~')) {
-          oldUrl = oldUrl.substring(0, oldUrl.indexOf('~'));
+        if (oldUrl.contains(urlStateDivider)) {
+          oldUrl = oldUrl.substring(0, oldUrl.indexOf(urlStateDivider));
         }
-        if (newUrl.contains('~')) {
-          newUrl = newUrl.substring(0, newUrl.indexOf('~'));
+        if (newUrl.contains(urlStateDivider)) {
+          newUrl = newUrl.substring(0, newUrl.indexOf(urlStateDivider));
         }
         if (newUrl != oldUrl) {
           openPath(window.location.hash.replaceFirst('#', ''));
@@ -103,13 +65,12 @@ class MainWindow extends PanelComponent {
       openPath(openUrl);
     }
     if (!insertedToPage) {
-      insertToPage(theme: theme, nodeSelector: nodeSelector);
+      insertToPage(nodeSelector: nodeSelector);
     }
   }
 
-  void insertToPage({String theme = 'default', String nodeSelector = 'body'}) {
+  void insertToPage({String nodeSelector = 'body'}) {
     configureMainWindow();
-    switchTheme(theme);
     nodeRoot.children.add(modalStatePanel.nodeRoot);
     querySelector(nodeSelector)?.children.add(nodeRoot);
     insertedToPage = true;
@@ -151,7 +112,7 @@ class MainWindow extends PanelComponent {
     }
     firstView
       ..params = firstViewUrlInfo.params
-      ..state = firstViewUrlInfo.state;
+      ..urlStateMap = firstViewUrlInfo.urlState;
     await firstView.init();
     var parentView = firstView;
     for (final viewUrl in viewUrls) {
@@ -164,7 +125,7 @@ class MainWindow extends PanelComponent {
         childView
           ..parent = parentView
           ..params = childViewUrlInfo.params
-          ..state = childViewUrlInfo.state;
+          ..urlStateMap = childViewUrlInfo.urlState;
         await childView.init();
         parentView = childView;
       }
@@ -200,49 +161,12 @@ class MainWindow extends PanelComponent {
     registeredViewsList.add(view);
   }
 
-  void registerViews(List<View> views) {
-    views.forEach(registerView);
-  }
-
   void close() {
     _onViewChange.close();
   }
 }
 
-class ViewUrlInfo {
-  ViewUrlInfo();
 
-  factory ViewUrlInfo.fromUrl(String url) {
-    final res = ViewUrlInfo();
-    var id = '';
-    var params = <String, String>{};
-    var state = <String, String>{};
-    if (url.contains('~')) {
-      final split = url.split('~');
-      url = split.first;
-      state = Uri.splitQueryString(split.last);
-    }
-    if (url.contains('?')) {
-      final split = url.split('?');
-      id = split.first;
-      params = Uri.splitQueryString(split.last);
-    } else {
-      id = url;
-    }
-    res
-      ..id = id
-      ..params = params
-      ..state = state;
-    return res;
-  }
-
-  String id = '';
-  Map<String, String> params = <String, String>{};
-  Map<String, String> state = <String, String>{};
-
-  String get stateString =>
-      state.entries.map((e) => '${e.key}=${e.value}').join('&');
-}
 
 String fullPathOfView(View lastView) {
   final encodedLastViewPath = _encodedPartOfPath(lastView);

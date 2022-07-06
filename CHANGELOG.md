@@ -1,3 +1,7 @@
+## 0.0.4
+
+- migrate to widgets 0.0.4
+
 ## 0.0.3
 
 - big refactoring for share package

@@ -1,8 +1,7 @@
-import 'dart:html';
-
 import 'package:simple_dart_web_widgets/fields/select_field.dart';
 import 'package:simple_dart_web_widgets/labels/simple_label.dart';
 import 'package:simple_dart_web_widgets/panel.dart';
+import 'package:simple_dart_web_widgets/theme_controller.dart';
 
 import 'main_window.dart';
 import 'simple_nav_bar.dart';
@@ -19,7 +18,7 @@ class MainWindowWithNavPathTheme extends MainWindow {
   SimpleNavBar simpleNavBar = SimpleNavBar();
   SimplePathPanel simplePathPanel = SimplePathPanel()..fillContent = true;
   SelectField selectTheme = SelectField()
-    ..initOptions(['default', 'blue'])
+    ..initOptions(themeController.themeList)
     ..height = '23px';
 
   @override
@@ -40,11 +39,11 @@ class MainWindowWithNavPathTheme extends MainWindow {
     topPanel.addAll(
         [simplePathPanel, SimpleLabel()..caption = 'theme', selectTheme]);
     verticalPanel.addAll([topPanel, display]);
-    final theme = window.localStorage['theme'] ?? 'default';
-    selectTheme.value = [theme];
+
     selectTheme.onValueChange.listen((event) {
-      switchTheme(event.newValue.first);
-      window.localStorage['theme'] = event.newValue.first;
+      themeController.switchTheme(event.newValue.first.replaceAll(' ', '_'));
     });
+    themeController.loadLocalTheme();
+    selectTheme.value = [themeController.currentTheme.replaceAll('_', ' ')];
   }
 }

@@ -1,6 +1,6 @@
 name: simple_dart_web_views
 description: Library for creating a single page application on dart.
-version: 0.0.3
+version: 0.0.4
 repository: https://github.com/ViktorZahar/simple_dart_web_views
 platforms:
   web:
@@ -10,10 +10,10 @@ environment:
   sdk: '>=2.16.0 <3.0.0'
 
 dependencies:
-  simple_dart_web_widgets: '^0.0.3'
+  simple_dart_web_widgets: '^0.0.4'
 
 dev_dependencies:
-  build_runner: ^2.1.7
+  build_runner: ^2.1.11
   build_web_compilers:
 
 
